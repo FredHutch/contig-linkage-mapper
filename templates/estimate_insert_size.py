@@ -82,8 +82,11 @@ for read_name, read_pair in read_pairs.items():
     if read_pair["R1"]["read_strand"] == "fwd":
 
         # Then the start position should be before R2
-        msg = "Reads are not oriented inwards (%s / $specimen)" % read_name
-        assert read_pair["R1"]["read_start"] < read_pair["R2"]["read_start"], msg
+        # If not
+        if read_pair["R1"]["read_start"] >= read_pair["R2"]["read_start"]:
+
+            # Skip it
+            continue
 
     # Otherwise
     else:
@@ -92,8 +95,11 @@ for read_name, read_pair in read_pairs.items():
         assert read_pair["R1"]["read_strand"] == "rev"
 
         # Then the start position should be after R2
-        msg = "Reads are not oriented inwards (%s / $specimen)" % read_name
-        assert read_pair["R1"]["read_start"] > read_pair["R2"]["read_start"], msg
+        # If not
+        if read_pair["R1"]["read_start"] <= read_pair["R2"]["read_start"]:
+
+            # Skip it
+            continue
 
     # Having passed all of the checks, add to the list of inserts
     insert_size_list.append(
