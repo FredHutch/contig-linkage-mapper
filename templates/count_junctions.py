@@ -58,6 +58,10 @@ def read_json(fp):
 # on the --sigma threshold provided by the user
 def classify_junction_position(df):
 
+    # If there is no data
+    if df is None:
+        return None
+
     # Calculate the distance to the end of the contig that
     # the read is pointing towards
     df = df.assign(
@@ -224,7 +228,7 @@ print("Classifying the junction position end for the target")
 target_df = classify_junction_position(read_json(target_fp))
 
 # If there are no reads aligning to either the target or the contigs
-if contigs_df.shape[0] == 0 or target_df.shape[0] == 0:
+if contigs_df is None or target_df is None:
 
     # Then there is no junction information,
     # so just write out an empty file
