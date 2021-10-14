@@ -72,9 +72,11 @@ for read_name, read_pair in read_pairs.items():
     msg = "Read was not aligned in a pair (%s / %s)" % (read_name, "$specimen")
     assert len(read_pair) == 2, msg
 
-    # The reads should be on opposite strands
-    msg = "Read pairs are aligned to the same strand"
-    assert read_pair["R1"]["read_strand"] != read_pair["R2"]["read_strand"], msg
+    # If the reads are not on opposite strands
+    if read_pair["R1"]["read_strand"] == read_pair["R2"]["read_strand"]:
+
+        # Skip this read pair
+        continue
 
     # If R1 is aligned on the fwd strand
     if read_pair["R1"]["read_strand"] == "fwd":
