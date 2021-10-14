@@ -198,7 +198,7 @@ process count_junctions {
     tuple val(specimen), path("contigs.json.gz"), path("target.json.gz"), path("insert_size.json")
 
     output:
-    tuple val(specimen), path("junctions.csv.gz")
+    tuple val(specimen), path("junctions.csv.gz"), optional: true
     
     script:
     template 'count_junctions.py'

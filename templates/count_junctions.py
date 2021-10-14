@@ -230,10 +230,8 @@ target_df = classify_junction_position(read_json(target_fp))
 # If there are no reads aligning to either the target or the contigs
 if contigs_df is None or target_df is None:
 
-    # Then there is no junction information,
-    # so just write out an empty file
-    with gzip.open(output_fp, "wt") as handle:
-        pass
+    # Do not write out any data
+    pass
 
 # Otherwise, if there is junction information
 else:
