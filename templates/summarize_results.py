@@ -7,6 +7,10 @@ import json
 pd.set_option('display.max_colwidth', None)
 pd.set_option('display.max_columns', None)
 
+# Get the specimen name from the Nextflow interpolation
+specimen = "${specimen}"
+print("Processing data for " + specimen)
+
 # Read in the summary of the read quality trimming
 fastq_stats = json.load(open("cutadapt.json"))
 
@@ -37,4 +41,4 @@ summary_df = junctions_df.groupby(
     summarize_contig
 ).reset_index()
 
-summary_df.to_csv("summary.csv.gz", index=None)
+summary_df.to_csv(f"{specimen}.csv.gz", index=None)

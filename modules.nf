@@ -208,13 +208,14 @@ process count_junctions {
 // Summarize the number of junctions per contig, per specimen
 process summarize_results {
     container "${params.container__pandas}"
+    publishDir "${params.output}", mode: 'copy', overwrite: true
     cpus 1
     
     input:
     tuple val(specimen), path("junctions.csv.gz"), path("cutadapt.json")
 
     output:
-    tuple val(specimen), path("summary.csv.gz")
+    path "${specimen}.csv.gz"
     
     script:
     template 'summarize_results.py'
