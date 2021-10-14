@@ -14,6 +14,9 @@ assert os.path.exists(fp)
 # Keep track of each read pair
 read_pairs = defaultdict(dict)
 
+# Keep track of multiple-aligning reads
+multiple_aligning_reads = set()
+
 # Open the input
 with pysam.AlignmentFile(fp, "rb") as handle:
 
@@ -23,23 +26,38 @@ with pysam.AlignmentFile(fp, "rb") as handle:
         # Assign the read pair label (R1/R2)
         read_pair = 'R1' if read.is_read1 else 'R2'
 
-        # Make sure that we haven't seen an alignment for this read yet
-        msg = "Found multiple alignments for %s from %s against the target"
-        msg = msg % (read.query_name, "$specimen")
-        assert read_pairs[read.query_name].get(read_pair) is None, msg
+        # If either end of this read has been aligned multiple times
+        if read.query_name in multiple_aligning_reads:
 
-        # Assign the strand
-        read_strand = 'rev' if read.is_reverse else 'fwd'
+            # Then skip it
+            continue
 
-        # Get the position on the reference where the first position of the read aligned
-        read_start = read.reference_end if read.is_reverse else read.reference_start
+        # Implicitly, neither side of this read pair has been aligned multiple times
 
-        # Save to the read_pairs dict
-        read_pairs[read.query_name][read_pair] = dict(
-            read_pair=read_pair,
-            read_strand=read_strand,
-            read_start=read_start
-        )
+        # Check to see if this read has been aligned already
+        if read_pairs[read.query_name].get(read_pair) is not None:
+
+            # If so, add it to the set
+            multiple_aligning_reads.add(read.query_name)
+
+            # Delete the data for this read
+            del read_pairs[read.query_name]
+
+        # If it has not been aligned yet
+        else:
+
+            # Assign the strand
+            read_strand = 'rev' if read.is_reverse else 'fwd'
+
+            # Get the position on the reference where the first position of the read aligned
+            read_start = read.reference_end if read.is_reverse else read.reference_start
+
+            # Save to the read_pairs dict
+            read_pairs[read.query_name][read_pair] = dict(
+                read_pair=read_pair,
+                read_strand=read_strand,
+                read_start=read_start
+            )
 
 # Now that we've read in all of the alignment information,
 # go through and calculate the insert sizes
